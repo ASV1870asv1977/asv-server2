@@ -41,7 +41,6 @@ def save_user_profile(backend, user, response, *args, **kwargs):
     if data['about']:
         user.shopuserprofile.aboutME = data['about']
 
-    # Что-то с данным куском кода выдает ошибку
     if data['bdate']:
         bdate = datetime.strptime(data['bdate'], '%d.%m.%Y').date()
 
