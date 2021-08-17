@@ -4,13 +4,14 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, pre_delete
 
+from mainapp.models import Product
 from ordersapp.forms import OrderItemForm
-from ordersapp.models import  Order, OrderItem
+from ordersapp.models import Order, OrderItem
 from basketapp.models import Basket
 
 # Create your views here.
@@ -28,22 +29,22 @@ class OrderItemCreate(CreateView):
     success_url = reverse_lazy('ordersapp:orders_list')
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        OrderFormset = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+        data = super(OrderItemCreate, self).get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
 
         if self.request.method == 'POST':
-            formset = OrderFormset(self.request.POST)
+            formset = OrderFormSet(self.request.POST)
         else:
-            basket_items = Basket.objects.filter(user=self.request.user)
-            if basket_items.exists():
-                OrderFormset = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=basket_items.count())
-                formset = OrderFormset()
+            basket_items = Basket.get_items(self.request.user)
+            if len(basket_items):
+                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
+                formset = OrderFormSet()
                 for num, form in enumerate(formset.forms):
                     form.initial['product'] = basket_items[num].product
                     form.initial['quantity'] = basket_items[num].quantity
                     form.initial['price'] = basket_items[num].product.price
             else:
-                formset = OrderFormset()
+                formset = OrderFormSet()
 
         data['orderitems'] = formset
         return data
@@ -72,13 +73,13 @@ class OrderItemUpdate(UpdateView):
     success_url = reverse_lazy('ordersapp:orders_list')
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        OrderFormset = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+        data = super(OrderItemUpdate, self).get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
 
         if self.request.POST:
-            data['orderitems'] = OrderFormset(self.request.POST, instance=self.object)
+            data['orderitems'] = OrderFormSet(self.request.POST, instance=self.object)
         else:
-            formset = OrderFormset(instance=self.object)
+            formset = OrderFormSet(instance=self.object)
             for form in formset.forms:
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
@@ -96,7 +97,7 @@ class OrderItemUpdate(UpdateView):
                 orderitems.instance = self.object
                 orderitems.save()
 
-        return super().form_valid(form)
+        return super(OrderItemUpdate, self).form_valid(form)
 
 
 class OrderItemsDelete(DeleteView):
@@ -132,3 +133,11 @@ def product_quantity_update_on_save(sender, update_fields, instance, **kwargs):
 def product_quantity_update_on_delete(sender, instance, **kwargs):
     instance.product.quantity += instance.quantity
     instance.product.save()
+
+
+def roduct_price(request, pk):
+    if request.is_ajax():
+        product_item = Product.objects.filter(pk=pk).first()
+        if product_item:
+            return JsonResponse({'price': product_item.price})
+    return JsonResponse({'price': 0})
