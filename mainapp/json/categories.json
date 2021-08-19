@@ -1,18 +1,47 @@
 [
-    {
-        "name": "дом",
-        "description": "отличная мебель для домашнего интерьера."
-    },
-    {
-        "name": "офис",
-        "description": "стильная и надежная офисная мебель нового поколения."
-    },
-    {
-        "name": "модерн",
-        "description": "мебель в стиле МОДЕРН подойдет для любого интерьера."
-    },
-    {
-        "name": "классика",
-        "description": "классический стиль актуален в любые времена."
+  {
+    "model": "mainapp.productcategory",
+    "pk": 1,
+    "fields": {
+      "name": "дом",
+      "description": "отличная мебель для домашнего интерьера.",
+      "is_active": true
     }
+  },
+  {
+    "model": "mainapp.productcategory",
+    "pk": 2,
+    "fields": {
+      "name": "офис",
+      "description": "стильная и надежная офисная мебель нового поколения. 2017 модельный год",
+      "is_active": true
+    }
+  },
+  {
+    "model": "mainapp.productcategory",
+    "pk": 3,
+    "fields": {
+      "name": "модерн",
+      "description": "мебель в стиле МОДЕРН подойдет для любого интерьера. И для вашего",
+      "is_active": true
+    }
+  },
+  {
+    "model": "mainapp.productcategory",
+    "pk": 4,
+    "fields": {
+      "name": "классика",
+      "description": "классический стиль актуален в любые времена.",
+      "is_active": true
+    }
+  },
+  {
+    "model": "mainapp.productcategory",
+    "pk": 5,
+    "fields": {
+      "name": "товары для кухни",
+      "description": "полезное для кухни 2017",
+      "is_active": false
+    }
+  }
 ]
