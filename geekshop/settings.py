@@ -169,7 +169,7 @@ STATIC_URL = '/static/'
 #     os.path.join(BASE_DIR, "static"),
 # )
 
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -178,7 +178,7 @@ AUTH_USER_MODEL = 'authapp.ShopUser'
 
 LOGIN_URL = '/auth/login/'
 
-DOMAIN = 'http://127.0.0.1:8000'
+DOMAIN = 'http://localhost:8000'
 
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
